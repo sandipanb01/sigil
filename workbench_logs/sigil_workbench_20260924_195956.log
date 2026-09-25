@@ -1,0 +1,53 @@
+SIGIL Workbench runner started: 2026-09-24T19:59:56
+PowerShell: 5.1.19041.6456
+Root: D:\sigil
+
+============================================================================
+  SIGIL -> Qualcomm AI Hub Workbench | ROBUST RUNNER v3
+============================================================================
+  Root:        D:\sigil
+  Device:      Snapdragon X Plus 8-Core CRD
+  Architecture:qwen3_4b
+  Context:     4096
+  Precision:   fp16, w8a16, w4a16
+  Upload cap:  150 MB
+  Job timeout: 3600 s
+  qai-hub:    0.55.0
+  Model-weight download policy: HARD BLOCKED by this script's execution path
+
+============================================================================
+  HOST PREFLIGHT  Verifying Windows PowerShell + disk + architecture
+============================================================================
+  Free space on D: 6.77 GB
+  D:\sigil.zip present: 0.75 MB
+
+============================================================================
+  1 / 10  Selecting a safe dedicated 64-bit Python runtime
+============================================================================
+  Using dedicated runner Python: D:\sigil\.qaihub-workbench-venv\Scripts\python.exe
+  Checkpoint saved: stage1_python
+
+============================================================================
+  Python verification
+============================================================================
+  Python 3.12.10 | 64-bit | AMD64 | CPython
+  Executable: D:\sigil\.qaihub-workbench-venv\Scripts\python.exe
+
+============================================================================
+  2 / 10  Verifying the SIGIL project layout
+============================================================================
+  Local sigil.zip exists | SHA-256 2EE5D5A6689C10D47A06B9D27D305FBEBAD8226DE9D91C1D6D2BC610533E0C14
+  Required SIGIL Workbench files are present.
+  Checkpoint saved: stage2_layout
+
+============================================================================
+  3 / 10  Verifying/installing ONLY the required Python packages
+============================================================================
+  WARNING: -SkipInstall supplied; package installation will not occur.
+FATAL: Required imports (qai_hub, numpy, onnx) are not available in the dedicated runner environment. Package installation may have completed, but the interpreter could not import them.
+Stopped at 2026-09-24T20:01:18
+UNHANDLED ERROR: Required imports (qai_hub, numpy, onnx) are not available in the dedicated runner environment. Package installation may have completed, but the interpreter could not import them.
+at Fail-Fast, D:\deploy_sigil_workbench_robust_v3.ps1: line 147
+at Ensure-PackageEnvironment, D:\deploy_sigil_workbench_robust_v3.ps1: line 755
+at <ScriptBlock>, D:\deploy_sigil_workbench_robust_v3.ps1: line 1169
+at <ScriptBlock>, <No file>: line 5

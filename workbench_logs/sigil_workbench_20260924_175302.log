@@ -1,0 +1,18 @@
+
+============================================================================
+  SIGIL -> Qualcomm AI Hub Workbench
+============================================================================
+  Root:       D:\sigil
+  Device:     Snapdragon X Plus 8-Core CRD
+  Architecture: qwen3_4b
+  Context:    4096
+  Precision:  fp16, w8a16, w4a16
+  Upload cap: 150 MB
+  Job timeout:3600 s
+  Model-weight download policy: HARD BLOCKED by execution path
+
+============================================================================
+  1 / 10  Selecting a safe 64-bit Python runtime
+============================================================================
+FATAL: No supported 64-bit Python 3.10-3.13 interpreter was found. Install Python 3.12 x64, then rerun this script.
+Stopped at 2026-09-24T17:53:09

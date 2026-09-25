@@ -1,0 +1,250 @@
+{
+  "fingerprint": "76d0c9b8e0452c9e",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "params_b": 0.494032768,
+  "n_layers": 24,
+  "head_dim": 64,
+  "n_kv_heads": 2,
+  "n_q_heads": 14,
+  "gqa_ratio": 7,
+  "device": "cuda",
+  "gpu": {
+    "backend": "cuda",
+    "name": "Tesla T4",
+    "device": "cuda",
+    "total_gb": 14.56,
+    "free_gb": 14.46,
+    "capability": "7.5",
+    "supports_bf16": true,
+    "supports_fp16_compute": true,
+    "sm_count": 40,
+    "available": true
+  },
+  "shape": {
+    "n_layers": 24,
+    "hidden_size": 896,
+    "head_dim": 64,
+    "n_q_heads": 14,
+    "n_kv_heads": 2,
+    "gqa_ratio": 7,
+    "is_gqa": true,
+    "is_mqa": false,
+    "n_attn_modules": 24,
+    "measured": {
+      "q_proj_out": 896,
+      "k_proj_out": 128,
+      "n_q_heads_measured": 14,
+      "n_kv_heads_measured": 2
+    },
+    "head_dim_is_pow2": true
+  },
+  "plan": {
+    "eval_seqs": 24,
+    "seq_len": 2048,
+    "weights_gb": 0.99,
+    "budget_gb": 10.85,
+    "est_peak_gb": 1.67,
+    "adjusted": false,
+    "fits": true,
+    "reason": "requested configuration fits"
+  },
+  "seq_len": 2048,
+  "n_eval_seqs": 24,
+  "ppl_fp16": 14.131080728181178,
+  "noop_guard_delta": 0.0,
+  "sweep_plan": {
+    "bits": [
+      4,
+      3,
+      2
+    ],
+    "groups": [
+      null,
+      64,
+      32,
+      16
+    ],
+    "rotations": [
+      false,
+      true
+    ],
+    "notes": [
+      "GQA detected: 14 query heads to 2 KV heads (ratio 7). K will be repeated for the fold check.",
+      "dropped group=128: exceeds min(seq_len=2048, head_dim=64)"
+    ],
+    "n_configs": 24
+  },
+  "kv_sweep": [
+    {
+      "bits": 4,
+      "rotated": false,
+      "group": null,
+      "ppl": 17.19647958526661,
+      "delta_ppl": 3.0653988570854303
+    },
+    {
+      "bits": 4,
+      "rotated": false,
+      "group": 64,
+      "ppl": 15.452693008772037,
+      "delta_ppl": 1.321612280590859
+    },
+    {
+      "bits": 4,
+      "rotated": false,
+      "group": 32,
+      "ppl": 15.032340086626606,
+      "delta_ppl": 0.9012593584454276
+    },
+    {
+      "bits": 4,
+      "rotated": false,
+      "group": 16,
+      "ppl": 14.923853647756111,
+      "delta_ppl": 0.7927729195749329
+    },
+    {
+      "bits": 4,
+      "rotated": true,
+      "group": null,
+      "ppl": 86.54771691764849,
+      "delta_ppl": 72.41663618946731
+    },
+    {
+      "bits": 4,
+      "rotated": true,
+      "group": 64,
+      "ppl": 31.34846667518244,
+      "delta_ppl": 17.21738594700126
+    },
+    {
+      "bits": 4,
+      "rotated": true,
+      "group": 32,
+      "ppl": 24.49397138868193,
+      "delta_ppl": 10.362890660500753
+    },
+    {
+      "bits": 4,
+      "rotated": true,
+      "group": 16,
+      "ppl": 23.926854381220316,
+      "delta_ppl": 9.795773653039138
+    },
+    {
+      "bits": 3,
+      "rotated": false,
+      "group": null,
+      "ppl": 73.88860496776842,
+      "delta_ppl": 59.75752423958724
+    },
+    {
+      "bits": 3,
+      "rotated": false,
+      "group": 64,
+      "ppl": 43.31185471863177,
+      "delta_ppl": 29.180773990450593
+    },
+    {
+      "bits": 3,
+      "rotated": false,
+      "group": 32,
+      "ppl": 37.22116147908987,
+      "delta_ppl": 23.090080750908694
+    },
+    {
+      "bits": 3,
+      "rotated": false,
+      "group": 16,
+      "ppl": 31.619173834702018,
+      "delta_ppl": 17.48809310652084
+    },
+    {
+      "bits": 3,
+      "rotated": true,
+      "group": null,
+      "ppl": 264.8799648186987,
+      "delta_ppl": 250.7488840905175
+    },
+    {
+      "bits": 3,
+      "rotated": true,
+      "group": 64,
+      "ppl": 106.22965001599476,
+      "delta_ppl": 92.09856928781359
+    },
+    {
+      "bits": 3,
+      "rotated": true,
+      "group": 32,
+      "ppl": 93.36297293463353,
+      "delta_ppl": 79.23189220645236
+    },
+    {
+      "bits": 3,
+      "rotated": true,
+      "group": 16,
+      "ppl": 75.83076534300396,
+      "delta_ppl": 61.699684614822786
+    },
+    {
+      "bits": 2,
+      "rotated": false,
+      "group": null,
+      "ppl": 5369.513311764637,
+      "delta_ppl": 5355.382231036456
+    },
+    {
+      "bits": 2,
+      "rotated": false,
+      "group": 64,
+      "ppl": 4147.759784041877,
+      "delta_ppl": 4133.628703313695
+    },
+    {
+      "bits": 2,
+      "rotated": false,
+      "group": 32,
+      "ppl": 3306.458272530129,
+      "delta_ppl": 3292.3271918019477
+    },
+    {
+      "bits": 2,
+      "rotated": false,
+      "group": 16,
+      "ppl": 2154.950778961964,
+      "delta_ppl": 2140.8196982337827
+    },
+    {
+      "bits": 2,
+      "rotated": true,
+      "group": null,
+      "ppl": 13315.855902854804,
+      "delta_ppl": 13301.724822126624
+    },
+    {
+      "bits": 2,
+      "rotated": true,
+      "group": 64,
+      "ppl": 8353.87300943248,
+      "delta_ppl": 8339.7419287043
+    },
+    {
+      "bits": 2,
+      "rotated": true,
+      "group": 32,
+      "ppl": 5224.944560715955,
+      "delta_ppl": 5210.8134799877735
+    },
+    {
+      "bits": 2,
+      "rotated": true,
+      "group": 16,
+      "ppl": 3233.370178634026,
+      "delta_ppl": 3219.239097905845
+    }
+  ],
+  "fold_rel_err": 3.681637679164851e-07,
+  "decode_tok_per_s": 25.772185538298707,
+  "kv_bytes_per_token_fp16": 12288
+}

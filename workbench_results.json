@@ -1,0 +1,72 @@
+{
+ "records": [
+  {
+   "device": "Snapdragon X Plus 8-Core CRD",
+   "precision": "fp16",
+   "arch": "qwen3_1_7b",
+   "kind": "decode",
+   "context": 4096,
+   "slice_key": "qwen3_1_7b-decode-p4096-s0-v1",
+   "slice_params": 50336000,
+   "backend": "real",
+   "source": "AI Hub Workbench profile",
+   "compile_job": "jp2ro094g",
+   "profile_job": "j5ql4e34p",
+   "profile_url": "https://workbench.aihub.qualcomm.com/jobs/j5ql4e34p/",
+   "status": "OK",
+   "profile": {
+    "inference_us": 6314,
+    "inference_ms": 6.314,
+    "peak_memory_bytes": 81739776,
+    "first_load_us": 5431032,
+    "ops": 53,
+    "ops_by_unit": {
+     "NPU": 53
+    },
+    "npu_fraction": 1.0,
+    "simulated": false
+   }
+  },
+  {
+   "device": "Snapdragon X Plus 8-Core CRD",
+   "precision": "w8a16",
+   "arch": "qwen3_1_7b",
+   "kind": "decode",
+   "context": 4096,
+   "slice_key": "qwen3_1_7b-decode-p4096-s0-v1",
+   "slice_params": 50336000,
+   "backend": "real",
+   "source": "AI Hub Workbench profile",
+   "compile_job": "jgoldkmqg",
+   "profile_job": "jpyo8rql5",
+   "profile_url": "https://workbench.aihub.qualcomm.com/jobs/jpyo8rql5/",
+   "status": "FAILED",
+   "stage": "profile",
+   "service_message": "Failed to profile the model: QNN_COMMON_ERROR_MEM_ALLOC: Memory allocation related error."
+  },
+  {
+   "device": "Snapdragon X Plus 8-Core CRD",
+   "precision": "w4a16",
+   "arch": "qwen3_1_7b",
+   "kind": "decode",
+   "context": 4096,
+   "slice_key": "qwen3_1_7b-decode-p4096-s0-v1",
+   "slice_params": 50336000,
+   "backend": "real",
+   "source": "AI Hub Workbench profile",
+   "compile_job": "j5ql4e1ep",
+   "profile_job": "jg9zojvqp",
+   "profile_url": "https://workbench.aihub.qualcomm.com/jobs/jg9zojvqp/",
+   "status": "FAILED",
+   "stage": "profile",
+   "service_message": "Failed to fully run the model, failed after compiling."
+  }
+ ],
+ "ledger": {
+  "uploaded_bytes": 0,
+  "downloaded_bytes": 7275,
+  "download_ceiling": 2097152,
+  "upload_budget": 150000000,
+  "events": 1
+ }
+}

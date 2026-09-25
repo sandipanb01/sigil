@@ -1,0 +1,31 @@
+
+============================================================================
+  SIGIL -> Qualcomm AI Hub Workbench | IRONCLAD RUNNER v5
+============================================================================
+  Root:        D:\sigil
+  Device:      Snapdragon X Plus 8-Core CRD
+  Architecture:qwen3_4b
+  Context:     4096
+  Precision:   fp16, w8a16, w4a16
+  Upload cap:  150 MB
+  Job timeout: 3600 s
+  qai-hub pin: 0.55.0
+  Model-weight download policy: HARD BLOCKED by this script's execution path
+
+============================================================================
+  HOST PREFLIGHT  Verifying PowerShell + OS + architecture + disk
+============================================================================
+  Free space on D: 6.77 GB
+  D:\sigil.zip present: 0.75 MB
+  Loaded checkpoint: D:\sigil\workbench_state.json
+  WARNING: Existing checkpoint could not be read safely: The property 'remote_state' cannot be found on this object. Verify that the property exists.
+  Previous state moved to: D:\sigil\workbench_state.json.reset_20260924_202532
+  Windows PowerShell: 5.1.19041.6456
+  64-bit OS: True
+  64-bit process: True
+
+============================================================================
+  1 / 10  Selecting a safe dedicated 64-bit Python runtime
+============================================================================
+FATAL: No supported 64-bit CPython 3.10-3.13 interpreter was found.
+Stopped at 2026-09-24T20:25:44

@@ -1,0 +1,32 @@
+{
+ "mock": {
+  "datasets": {
+   "calib-qwen3_4b-decode-p4096-s0-v1": {
+    "bytes": 33582084,
+    "dataset_id": "mockd0002"
+   }
+  },
+  "models": {
+   "qwen3_4b-decode-p4096-s0-v1": {
+    "bytes": 83763846,
+    "model_id": "mockm0001",
+    "sha256": "d40a58c23ba496fc123b48ed9bf0a7198d1f9e7b8c9bdcba8ce9b8229f3f183d"
+   }
+  }
+ },
+ "real": {
+  "datasets": {
+   "calib-qwen3_1_7b-decode-p4096-s0-v1": {
+    "bytes": 33580036,
+    "dataset_id": "d2q4y3zy7"
+   }
+  },
+  "models": {
+   "qwen3_1_7b-decode-p4096-s0-v1": {
+    "bytes": 41854307,
+    "model_id": "mq9y3yx2n",
+    "sha256": "d30e228abdb0bbf09a891c424fde016d44b57503f2833804750aa0cfea15e54c"
+   }
+  }
+ }
+}

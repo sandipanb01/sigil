@@ -1,0 +1,11 @@
+SIGIL Workbench runner started: 2026-09-24T19:59:29
+Root: D:\sigil
+Device: Snapdragon X Plus 8-Core CRD
+Arch: qwen3_4b
+Context: 4096
+Precision: fp16, w8a16, w4a16
+
+============================================================================
+  3 / 10  Verifying/installing ONLY the required Python packages
+============================================================================
+  WARNING: -SkipInstall was supplied. Package installation will not occur.

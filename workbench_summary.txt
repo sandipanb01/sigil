@@ -1,0 +1,9 @@
+SIGIL-Edge -- AI Hub Workbench results
+generated 2026-09-25 13:58:05
+
+device      : Snapdragon X Plus 8-Core CRD
+layer       : qwen3_1_7b at 4096-token context
+fp16        : 6.314 ms per layer
+profile jobs: j5ql4e34p
+uploaded    : 0 B
+downloaded  : 7.1 KB (profile JSON only)

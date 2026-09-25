@@ -1,0 +1,28 @@
+﻿# Python environments
+.venv/
+.venv-aihub/
+.qaihub-venv/
+.qaihub-workbench-venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Local logs
+logs/
+
+# Workbench backup/reset/corrupt state
+workbench_state.json.corrupt_*
+workbench_state.json.reset_*
+
+# Backup files
+*.bak
+
+# Mock JSON artifacts
+*.mock.json
+
+# Documents/presentations excluded from this repository
+*.docx
+*.pdf
+*.pptx
