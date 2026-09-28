@@ -68,7 +68,7 @@ python .\aihub_workbench.py results
 | `slt_compressibility.py` | 22 | Singular-learning-theory compressibility. Documents an estimator failure honestly. | run it |
 | `aihub_bench.py` | 16 | Qualcomm's **published** numbers per model -- a few KB of metadata, no weights. | `--models ...` |
 | `stress_all.py` | 292 | One command that tries to break everything, in seven phases including **network**: nothing may download a model -- no file, no emitted command, no document. | run it, or `--quick` |
-| `audit_claims.py` | 128 | Re-derives the quoted numbers from the code, and checks the documents quote the counts the code reports. | run it before quoting anything |
+| `audit_claims.py` | 131 | Re-derives the quoted numbers from the code, and checks the documents quote the counts the code reports. | run it before quoting anything |
 
 Plus the `sigil/` package (`npu.py`, `allocate.py`, `quant.py`, `rotation.py`,
 `gof.py`) used by `run_local_validation.py` and `p1_test.py`.
@@ -151,8 +151,11 @@ published no Compute numbers at all, from website pages showing empty tables.
 The package data proves otherwise for two of the three devices. PROVENANCE.md
 records it as the ninth prediction of absence to fail.
 
-**So the gap is exact, and `aihub_workbench.py` is built to fill it without a
-download.**
+**So the gap is exact, and `aihub_workbench.py` filled it without a
+download.** A Qwen3-1.7B layer at 4K context on X Plus 8-Core CRD: fp16 at
+6.314 ms per layer, 53 operators, all on the NPU (job `j5ql4e34p`); w8a16 and
+w4a16 compiled and then failed on the device, with the service's own error
+strings kept.
 It profiles an architecture-faithful Qwen3-4B layer on X Plus 8-Core CRD at
 fp16, w8a16 and w4a16, following the same job sequence as Qualcomm's own
 qai_hub_models pipeline. `roofline.py predict` states in advance what it should
@@ -163,10 +166,10 @@ is Snapdragon X2 Plus, and AI Hub offers no X2 Plus device.
 
 ## Known gaps, stated plainly
 
-- **No job from this project has run on Workbench yet.** There is no API token
-  in the build environment. The runner is verified end to end against a mock
-  whose signatures match the installed client parameter by parameter, and the
-  exact archive it uploads is accepted by the client's own classifier.
+- **One device, one precision, one layer.** The Workbench run profiled fp16
+  on X Plus 8-Core CRD; w8a16 and w4a16 failed on that device after compiling.
+  Nothing here has run on X Elite or X2 Elite, and nothing has run on an
+  actual HP machine.
 - **One layer is not a model.** Per-token figures from the runner are
   extrapolated and labelled so; `results` calibrates them against Qualcomm's
   full-model numbers on the two devices where both exist.
