@@ -285,7 +285,7 @@ ck("documented total is 872 self-tests", total == 872,
 # harness grew to 223 checks, because "222" was still somewhere in the file.
 # Every count below is matched in context, and the stale values are named so
 # they can never come back quietly.
-STRESS_FULL, STRESS_NO_PKG, SELFTESTS, AUDIT_CLAIMS = 292, 255, 872, 128
+STRESS_FULL, STRESS_NO_PKG, SELFTESTS, AUDIT_CLAIMS = 292, 255, 872, 131
 
 docs = {f: (HERE / f).read_text(encoding="utf-8")
         for f in ("MANIFEST.md", "README.md", "SUBMISSION.md")}
@@ -335,7 +335,12 @@ STALE = ["180 adversarial", "222-check", "| `stress_all.py` | 222 |",
          "qai-hub-models " + "fetch", "qai-hub-models " + "export",
          "290-check", "| `stress_all.py` | 290 |", "253 if the optional",
          "| `audit_claims.py` | 115 |", "Eight predictions that a source would be barren",
-         "~118 MB"]
+         "~118 MB",
+         # Added 2026-09-25, the day the Workbench job succeeded: these two
+         # sentences were true when they were written and false minutes later,
+         # which is exactly the failure mode this list exists for.
+         "No job from this project has run", "No job has been run from here yet",
+         "128-check claim audit"]
 for bad in STALE:
     _where = [f for f, t in _stale_in.items() if bad in t]
     ck(f"no document still quotes {bad.strip()!r}", not _where, _where)
