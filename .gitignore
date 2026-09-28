@@ -1,4 +1,4 @@
-﻿# Python environments
+# Python environments
 .venv/
 .venv-aihub/
 .qaihub-venv/
@@ -22,7 +22,18 @@ workbench_state.json.reset_*
 # Mock JSON artifacts
 *.mock.json
 
-# Documents/presentations excluded from this repository
+# The local build scratch: ONNX graphs and their zips, hundreds of MB, rebuilt
+# from source in about a minute by `aihub_workbench.py build`. It was committed
+# once through Git LFS, which leaves a cloner without LFS holding 133-byte
+# pointer files named .onnx -- worse than an honest absence.
+workbench_build/
+
+# Documents and presentations are generated from build_deck.py and
+# build_brief.js and are not tracked -- except the three the submission is
+# actually made of, which a judge should find without running anything.
 *.docx
 *.pdf
 *.pptx
+!SIGIL_Edge_Pitch.pptx
+!SIGIL_Edge_Pitch.pdf
+!SIGIL_Edge_Brief_Description.docx
