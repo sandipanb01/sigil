@@ -6,7 +6,7 @@ straight line in the bytes moved per token.** Qualcomm's own measurements
 show it, the scaling-book roofline predicts it, and every design decision
 here follows from it.
 
-872 self-tests across 14 modules, a 292-check stress harness, and a 128-check
+872 self-tests across 14 modules, a 292-check stress harness, and a 131-check
 claim audit that re-derives the quoted numbers from the code. All passing. The
 engine, the roofline and the HP mapping need only the standard library; the
 science modules need NumPy; only the Colab benchmark needs torch. Apache-2.0.
@@ -50,7 +50,7 @@ python audit_claims.py                              # every number vs the code
 | `slt_compressibility.py` | 22 | Singular learning theory; documents an estimator failure |
 | `aihub_bench.py` | 16 | Qualcomm's published numbers per model -- a few KB of metadata, no weights |
 | `stress_all.py` | 292 | One command that tries to break everything: fuzzing, numeric sanity, determinism, portability, CLI smoke, and **network** |
-| `audit_claims.py` | 128 | Re-derives the quoted numbers from the code, and checks the documents quote the counts the code reports |
+| `audit_claims.py` | 131 | Re-derives the quoted numbers from the code, and checks the documents quote the counts the code reports |
 | `sigil/` | -- | Rotation/quantiser primitives, exact folding, Hexagon audit (`run_local_validation.py`, `p1_test.py`) |
 
 Documents: `SUBMISSION.md` (form text), `PROVENANCE.md` (every source and
@@ -105,8 +105,8 @@ do (`roofline.py predict`).
 
 Qualcomm's package carries 491 measured entries for X Elite CRD, 487 for X2
 Elite CRD and **none for X Plus 8-Core CRD** -- the AI Hub device that stands
-in for four of the seven HP machines. `aihub_workbench.py` is built to fill
-that gap:
+in for four of the seven HP machines. `aihub_workbench.py` fills that gap,
+and has:
 
 1. builds one Qwen3-4B decoder layer at its real dimensions -- attention with
    a 4K-token KV cache, RoPE, the gated MLP -- with grid-valued weights that
@@ -120,9 +120,15 @@ that gap:
 The client it drives exposes no download method at all. It is verified end to
 end against a mock whose signatures match the installed `qai-hub` client
 parameter by parameter, and the archive it uploads is accepted by the
-client's own model-type classifier. `roofline.py predict` writes down in
-advance what it should see. No job has been run from here yet: that takes
-your API token and one command.
+client's own model-type classifier.
+
+**It has run.** A Qwen3-1.7B decoder layer at 4K context, profiled on
+Snapdragon X Plus 8-Core CRD: fp16 in **6.314 ms per layer, 53 operators,
+every one of them on the NPU**, 81.7 MB peak (job `j5ql4e34p`). The two
+quantised paths compiled and then failed on the device --
+`QNN_COMMON_ERROR_MEM_ALLOC` at w8a16, "failed after compiling" at w4a16 --
+which is the first public evidence of where that part's profiler stops. The
+whole run uploaded once and brought back 7.1 KB of JSON.
 
 ---
 
