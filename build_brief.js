@@ -1,4 +1,4 @@
-// build_brief.js -- regenerate SIGIL_Edge_Brief_Description.docx
+// build_brief.js 
 //
 // Regenerate after any change to a quoted number: audit_claims.py checks the
 // counts in this file against the code. Run:  node build_brief.js
@@ -163,16 +163,24 @@ const doc = new Document({
                  "CRD and 487 for X2 Elite CRD, and " },
           { text: "none for X Plus 8-Core CRD", bold: true },
           { text: " -- the device that stands in for four of the seven HP " +
-                  "machines. A zero-download runner is built to fill that " +
-                  "gap: it builds one Qwen3-4B decoder layer at its real " +
-                  "dimensions, uploads it once (84 MB, plus 34 MB of " +
-                  "calibration data), and has AI Hub Workbench compile, " +
-                  "quantise and profile it at fp16, w8a16 and w4a16, following " +
-                  "the job sequence of Qualcomm's own pipeline. What comes " +
-                  "back is profile JSON, against a hard 2 MB ceiling. It is " +
-                  "verified against a mock whose signatures match the " +
-                  "installed client; the real job runs with the entrant's API " +
-                  "token." }]),
+                  "machines. That gap has now been filled, without a single " +
+                  "model weight reaching the laptop. One Qwen3-1.7B decoder " +
+                  "layer was built locally at its real dimensions, uploaded " +
+                  "once, and put through AI Hub Workbench's compile, quantise " +
+                  "and profile jobs at fp16, w8a16 and w4a16. " },
+          { text: "At fp16 the layer runs in 6.314 ms, 53 operators, all of " +
+                  "them on the NPU, 81.7 MB peak memory", bold: true },
+          { text: " (job j5ql4e34p) -- 18.6 GB/s, 13.8% of the 135 GB/s peak, " +
+                  "on a layer profiled in isolation. The quantised paths " +
+                  "compiled and then failed on the device: w8a16 with " +
+                  "QNN_COMMON_ERROR_MEM_ALLOC, w4a16 \"failed after " +
+                  "compiling\". " },
+          { text: "The two failures are a result, not a gap", bold: true },
+          { text: " -- both graphs converted cleanly, so this is a runtime " +
+                  "allocation limit on the 8-core part, and it is the first " +
+                  "public evidence of where its profiler stops. The ledger " +
+                  "for the whole run: 0 bytes of model weights down, 7,275 " +
+                  "bytes of profile JSON, against a hard 2 MB ceiling." }]),
       p([{ text: "On the NPU question, the honest answer has two halves. " },
           { text: "Prefill runs on the Hexagon NPU", bold: true },
           { text: " -- INT4 weights, static shapes, via GenieX or ONNX Runtime " +
@@ -284,6 +292,20 @@ const doc = new Document({
         "NPU (Windows ARM64); and AI Hub Workbench for compile-and-profile " +
         "jobs on the X-series devices, with nothing downloaded to the " +
         "developer's machine."),
+      p([{ text: "Both findings land on a shipping app. AnythingLLM is an " +
+                 "MIT-licensed local-first document-chat desktop app whose " +
+                 "Snapdragon NPU port ships Llama-3.2-3B, Llama-3.1-8B and " +
+                 "Phi-3.5-mini -- the same class of model, on the same chips. " },
+          { text: "The runtime matters more than the model choice", bold: true },
+          { text: ": on X Elite at w4a16, Qualcomm's own measurements give " +
+                  "Llama-3.2-3B 11.32 tok/s under Genie against 19.82 under " +
+                  "QAIRT, and Llama-3.1-8B 5.02 against 10.72 -- 1.75x and " +
+                  "2.14x, same weights, same silicon. And that app's NPU " +
+                  "engine currently fails on Snapdragon X Plus (X1P42100), " +
+                  "because its bundled CPU-detection table does not recognise " +
+                  "the part -- an open issue at the time of writing. That is " +
+                  "exactly the tier profiled above, and the proxy for four of " +
+                  "the seven HP machines." }]),
 
       h("Use case"),
       p("Indic-language document intelligence: statutory forms, land records, " +
@@ -309,7 +331,7 @@ const doc = new Document({
 
       h("Verification"),
       p([{ text: "872 self-tests across 14 modules, a 292-check adversarial " +
-                 "stress harness, and a 128-check claim audit that re-derives " +
+                 "stress harness, and a 131-check claim audit that re-derives " +
                  "the quoted numbers from the code. ", bold: true },
           { text: "Nothing in the project downloads a model: the harness reads " +
                   "every file, every command it emits and every document. " +
