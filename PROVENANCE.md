@@ -2690,3 +2690,97 @@ ignored, as it should be.
 Still not done, and stated everywhere it matters: no job from this project
 has run on AI Hub Workbench, because there is no API token in the build
 environment. The runner is one command on a machine that has one.
+
+
+---
+
+# THE FIRST X PLUS 8-CORE NUMBERS -- 2026-09-25
+
+The runner ran. `Deploy-SigilAIHub.ps1` built a Qwen3-1.7B decoder layer at
+4K context on the user's own laptop, uploaded it once, and had AI Hub
+Workbench compile, quantise and profile it on **Snapdragon X Plus 8-Core
+CRD** -- the device the package data has zero measured entries for.
+
+| precision | compile job | profile job | outcome |
+|---|---|---|---|
+| fp16 | `jp2ro094g` | `j5ql4e34p` | 6.314 ms/layer, 53 ops, NPU fraction 1.0, 81.7 MB peak, 5.43 s first load |
+| w8a16 | `jgoldkmqg` | `jpyo8rql5` | FAILED at profile: `QNN_COMMON_ERROR_MEM_ALLOC: Memory allocation related error.` |
+| w4a16 | `j5ql4e1ep` | `jg9zojvqp` | FAILED at profile: "Failed to fully run the model, failed after compiling." |
+
+Ledger for the run: **0 bytes uploaded** (the layer was already on the service
+from an earlier attempt, so the cache did its job) and **7,275 bytes
+downloaded**, all of it profile JSON, against the 2 MB ceiling. The
+zero-download contract held end to end on a real account.
+
+## Reading the fp16 number honestly
+
+The layer moves 100.7 MB of fp16 weights plus 16.8 MB of KV per step: 117.5
+MB in 6.314 ms, or 18.6 GB/s, 13.8% of the 135 GB/s peak. That is far below
+what the same silicon reaches on a whole model, and the reason is structural
+rather than surprising: a single layer profiled in isolation pays the
+per-inference fixed cost once per layer instead of once per token, and fp16
+is not the precision anything ships at. It is published as a layer figure.
+Turning it into a model figure would require every layer and the LM head, and
+the precision that would actually be shipped did not run at all.
+
+## The failures are evidence, and they are kept
+
+Both quantised paths compiled cleanly and then failed on the device. That
+locates the limit at runtime rather than at conversion: with INT16
+activations over a 4K KV cache the allocation does not fit on the 8-core part
+where the fp16 graph does at 81.7 MB. Two jobs on one device at one context
+length is all that supports it, and the submission says so. The obvious next
+experiment is the same layer at 1K context, or the 0.6B layer, which the
+runner takes as `-Context 1024` or `-Arch qwen3_0_6b`.
+
+## A second script, and why this one worked
+
+The repository's `workbench_logs/` also carries the logs of an earlier,
+stage-based deployment script that failed at its fourth stage with
+`usage: qai-hub [-h] [--profile PROFILE] [--verbose]` -- it had shelled out to
+`qai-hub --version`, and that CLI has no `--version` flag. Those logs are kept
+because a failed attempt beside a successful one is the more honest record. No
+token appears in any of them; the only long hex string is the SHA-256 of
+`sigil.zip`.
+
+# WHAT THE MEASUREMENT IS WORTH TO A SHIPPED APP -- 2026-09-28
+
+Prompted by a pointer to Mintplex Labs, whose AnythingLLM is an MIT-licensed
+local-first document-chat desktop app -- the same product shape as this
+project's stated use case -- and which Qualcomm itself ported to the
+Snapdragon NPU on Windows (Qualcomm developer blog, January 2025). Its QNN
+model list ships Llama-3.2-3B (8K and 16K context), Llama-3.1-8B (8K) and
+Phi-3.5-mini (4K).
+
+**1. The runtime is worth more than the model choice, and this project already
+measured it.** From `roofline.py runtimes`, on X Elite at w4a16 and 4K
+context: Llama-3.2-3B decodes 11.32 tok/s under Genie against 19.82 under
+QAIRT, a factor of 1.75; Llama-3.1-8B, 5.02 against 10.72, a factor of 2.14.
+Same weights, same silicon, different runtime. Anyone shipping those two models on that chip is
+choosing a factor of two by choosing a runtime.
+
+**2. The unmeasured device is a device that app cannot use.** anything-llm
+issue #5129, open: the QNN engine fails on Snapdragon X Plus (X1P42100)
+because the bundled cpuinfo does not recognise the part -- "Unknown chip model
+name ... Please add new Windows on Arm SoC/chip support" -- with the
+maintainer escalating it to the vendor, and one reporter finding that Windows
+Memory Integrity (HVCI) also blocks NPU access. Related: #2962 ("QNN Engine is
+offline" on Snapdragon X), #3194 (NPU compatibility on X Elite), #4989
+(onboarding for NPU chips).
+
+That is the same silicon tier as the X Plus 8-Core CRD profiled above, and the
+proxy for four of the seven HP machines. The gap this project found in
+Qualcomm's published data is the same gap a 66k-star application falls into.
+Neither fact was known to the other until now, and both are checkable: a job
+ID on one side, an issue number on the other.
+
+**What is NOT claimed:** that this project fixes that bug, that the two are
+causally connected, or that AnythingLLM has been run on any machine here. The
+link is that both point at the same part.
+
+## Standing totals as of 2026-09-28
+
+**872 self-tests across 14 modules. 292 adversarial checks (255 without the
+optional `sigil/` folder). A 131-check claim audit -- two of the checks added
+today exist to catch the sentences that went stale the moment the Workbench
+job succeeded. All passing.**
