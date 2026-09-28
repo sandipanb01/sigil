@@ -348,16 +348,16 @@ def s_engines(prs):
 
 def s_workbench(prs):
     """
-    The zero-download Workbench path as four steps, and what is and is not
-    proven about it. The last step is the point: what comes back is JSON.
+    The zero-download Workbench path as four steps, then what came back on
+    25 September: one number, and two failures that are themselves the result.
     """
     s = blank(prs)
-    y = heading(s, "Zero-download testing on AI Hub Workbench",
-                "Aimed at the one X-series device Qualcomm has not measured")
-    steps = [("Build", "one Qwen3-4B layer at real dimensions, 84 MB zipped"),
-             ("Upload once", "plus 34 MB of calibration data"),
+    y = heading(s, "Zero-download profiling on AI Hub Workbench",
+                "The one X-series device Qualcomm has not measured")
+    steps = [("Build", "one Qwen3-1.7B layer at real dimensions, on the laptop CPU"),
+             ("Upload once", "no model weight is ever fetched"),
              ("Profile", "X Plus 8-Core CRD at fp16, w8a16, w4a16"),
-             ("Download", "profile JSON only, a 2 MB hard ceiling")]
+             ("Download", "7,275 bytes of profile JSON, a 2 MB hard ceiling")]
     bw, gap = Inches(2.0), Inches(0.22)
     for i, (big, small) in enumerate(steps):
         x = M + i * (bw + gap)
@@ -372,22 +372,28 @@ def s_workbench(prs):
                     align=PP_ALIGN.CENTER)
             para(ta, ">", 13, True, MUTED, first=True, align=PP_ALIGN.CENTER)
     yy = y + Inches(1.40)
-    cw, ch = Inches(4.28), Inches(1.46)
-    rect(s, M, yy, cw, ch, PANEL)
-    t1 = tb(s, M + Inches(0.22), yy + Inches(0.14), Inches(3.84), Inches(1.2))
-    para(t1, "Checked without a token; runs with yours", 10.5, True, MUTED,
-         first=True)
-    para(t1, "Every call matches the installed client, parameter by "
-             "parameter. The archive passes the client's own check. The graph "
-             "matches a NumPy reference to 1e-7.", 11.5, False, NAVY,
-         space_before=5)
+    cw, ch = Inches(4.28), Inches(1.72)
+    rect(s, M, yy, cw, ch, GREENB)
+    t1 = tb(s, M + Inches(0.22), yy + Inches(0.14), Inches(3.84), Inches(1.46))
+    para(t1, "It ran, on 25 September", 10.5, True, GREEN, first=True)
+    para(t1, "6.314 ms per layer", 18, True, GREEN, space_before=4)
+    para(t1, "fp16, 53 operators, every one on the NPU, 81.7 MB peak. That is "
+             "18.6 GB/s, 13.8% of the 135 GB/s bus. Job j5ql4e34p.", 11.5,
+         False, NAVY, space_before=4)
     right = M + Inches(4.58)
-    rect(s, right, yy, cw, ch, GREENB)
-    t2 = tb(s, right + Inches(0.22), yy + Inches(0.14), Inches(3.84), Inches(1.2))
-    para(t2, "Written down before it runs", 10.5, True, GREEN, first=True)
-    para(t2, "~21 tok/s", 18, True, GREEN, space_before=4)
-    para(t2, "Qwen3-4B w4a16 at 4K context, if X Plus 8-Core shares X Elite's "
-             "135 GB/s bus.", 11.5, False, NAVY, space_before=4)
+    rect(s, right, yy, cw, ch, REDB)
+    t2 = tb(s, right + Inches(0.22), yy + Inches(0.14), Inches(3.84), Inches(1.46))
+    para(t2, "Both quantised paths failed on the device", 10.5, True, RED,
+         first=True)
+    para(t2, "w8a16: QNN_COMMON_ERROR_MEM_ALLOC. w4a16: failed after "
+             "compiling.", 11.5, False, NAVY, space_before=5)
+    para(t2, "Both converted cleanly first, so this is a runtime allocation "
+             "limit on the 8-core part, not a conversion error. It is the "
+             "result, not a gap in it.", 11.5, False, NAVY, space_before=5)
+    t3 = tb(s, M, yy + ch + Inches(0.20), W - 2 * M, Inches(0.42))
+    para(t3, "Not one model weight reached the laptop: 0 B up, 7.1 KB down. "
+             "Every job ID is in the repository, the two failures included.",
+         12, True, MUTED, first=True)
 
 
 def s_container(prs):
@@ -734,6 +740,11 @@ def s_deploy(prs):
               "CPU decode alike. The ternary container runs on the ARM CPU, "
               "because stock QNN has no ternary matmul.", 12.5, False,
          NAVY, space_before=6)
+    para(tf2, "A SHIPPING APP has both problems already. AnythingLLM's "
+              "Snapdragon NPU build runs Llama-3.2-3B at 11.32 tok/s under "
+              "Genie and 19.82 under QAIRT -- same weights, same chip -- and "
+              "its NPU engine fails outright on X Plus, the tier profiled "
+              "here.", 12.5, False, NAVY, space_before=6)
     para(tf2, "Claiming the whole pipeline runs on the NPU is the claim that "
               "gets taken apart. Claiming the NPU is unusable is equally wrong.",
          12.5, True, RED, space_before=8)
