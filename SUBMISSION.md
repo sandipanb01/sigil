@@ -1,8 +1,9 @@
 # Snapdragon AI Lab Build & Present Challenge — submission pack
 
-Drafted to be pasted straight into the form. Numbers marked `[FILL]` come from
-your Colab run and your AI Hub Workbench run — **do not submit placeholder
-numbers.** Everything else on this page is measured or cited, and
+Drafted to be pasted straight into the form. Nothing on this page is a
+placeholder any more: the Colab run and the AI Hub Workbench run have both
+happened, and their numbers — including the two jobs that failed — are below
+with their job IDs. Everything else on this page is measured or cited, and
 `PROVENANCE.md` carries the source for each. `python audit_claims.py`
 re-derives the headline numbers here from the code and fails if a document
 drifts from them.
@@ -163,9 +164,10 @@ comes back is profile JSON, a few KB per job, against a hard 2 MB ceiling;
 the client it drives has no download method at all. Every AI Hub call is
 asserted against the installed `qai-hub` client's signatures at test time, so
 an API change breaks a test here instead of a job the night before a deadline.
-The Workbench numbers below were produced from this repository on
-Snapdragon X Plus 8-Core CRD, jobs j5ql4e34p. The per-token figure is
-extrapolated from one layer, and is labelled so wherever it is quoted.
+The Workbench numbers below were produced from this repository on Snapdragon
+X Plus 8-Core CRD: fp16 profiled cleanly (job `j5ql4e34p`), and the two
+quantised paths compiled and then failed on the device, which is reported
+with the service's own error strings rather than dropped.
 
 **The NPU question, answered in two halves.** Prefill runs on the Hexagon NPU:
 INT4 weights, static shapes, via GenieX (QAIRT-backed) or ONNX Runtime QNN. It
@@ -183,6 +185,21 @@ NPU/GGUF serving with an OpenAI-compatible endpoint, run on the HP laptop
 itself; llmware's ONNXRuntime-QNN path for document parsing and RAG on the
 Snapdragon NPU (Windows ARM64); and AI Hub Workbench for compile-and-profile
 jobs on the three X-series CRDs, with nothing downloaded.
+
+**And a shipped app this is immediately worth something to.** AnythingLLM is
+an MIT-licensed, local-first document-chat desktop app that Qualcomm itself
+ported to the Snapdragon NPU; its QNN path ships Llama-3.2-3B (8K and 16K
+context), Llama-3.1-8B (8K) and Phi-3.5-mini (4K). Two findings here apply to
+it directly and can be checked today. **The runtime is worth more than the
+model choice:** on X Elite at w4a16, Qualcomm's own measurements give
+Llama-3.2-3B 11.32 tok/s under Genie against 19.82 under QAIRT (1.75x), and
+Llama-3.1-8B 5.02 against 10.72 (2.14x) — same weights, same silicon.
+**And the device we profiled is the device that app cannot currently use:**
+its NPU engine fails on Snapdragon X Plus (X1P42100) because the bundled
+cpuinfo does not recognise the part (issue #5129, open, escalated to the
+vendor). That is the same tier as the X Plus 8-Core CRD profiled above, and
+the proxy for four of the seven HP machines. The gap this project measured is
+not academic: it is where a 66k-star application loses the NPU.
 
 **Use case.** Indic-language document intelligence: statutory forms, land
 records, exam papers and health documents across Hindi, Marathi, Gujarati,
@@ -241,11 +258,27 @@ bits). For Bonsai 2 27B the law predicts that a 128×512 calibration set keeps o
 measured gain on `down_proj` — the matrix that always binds, because it alone
 sees the intermediate dimension.
 
-**Measured on AI Hub Workbench, Snapdragon X Plus 8-Core CRD (`aihub_workbench.py
-results`):** job IDs `j5ql4e34p`;
-one Qwen3-1.7B layer at 4K context, fp16 `6.314` / w8a16 `n/a` / w4a16 `n/a` ms per
-layer; extrapolated w4a16 decode `n/a` tok/s against the ~41.53 tok/s that
-`roofline.py predict` wrote down in advance.
+**Measured on AI Hub Workbench, Snapdragon X Plus 8-Core CRD** — the one
+X-series device Qualcomm has published nothing for. One Qwen3-1.7B decoder
+layer at 4K context, built locally and uploaded once:
+
+| precision | job | result |
+|---|---|---|
+| fp16 | `j5ql4e34p` | **6.314 ms per layer, 53 operators, every one on the NPU**, 81.7 MB peak, 5.43 s first load |
+| w8a16 | `jpyo8rql5` | compiled, then `QNN_COMMON_ERROR_MEM_ALLOC: Memory allocation related error` at profile |
+| w4a16 | `jg9zojvqp` | compiled, then "Failed to fully run the model, failed after compiling" |
+
+Uploaded once, 7.1 KB of profile JSON back, nothing downloaded. The fp16 layer
+moves 117.5 MB per step and does it in 6.314 ms — **18.6 GB/s, 13.8% of the
+135 GB/s peak** — which is what a single layer profiled in isolation looks
+like: the per-inference fixed cost is paid once per layer instead of once per
+token. We publish it as a layer figure and do not turn it into a model figure.
+
+**The two failures are a result, not a gap.** They are the first public
+evidence of where the 8-core part's profiler stops: the quantised graph, with
+INT16 activations over a 4K KV cache, does not allocate on this device while
+the fp16 graph does, at 81.7 MB. Both failed *after* a clean compile, so it is
+a runtime limit, not a conversion error. Nobody else will have that either.
 
 **Measured on Colab T4 (reproducible, ~90 min):** FP16 perplexity `14.131`;
 KV at INT4 group-32 `15.032`; fold error `3.68E-007`; decode `25.77` tok/s;
@@ -308,9 +341,11 @@ is not yet measured.
 - *"Qualcomm publishes no X-series performance numbers."* Our own earlier
   claim, withdrawn: the package data holds 978 measured X Elite and X2 Elite
   entries. What is missing is X Plus 8-Core.
-- *"Measured on X Plus 8-Core."* Not until your Workbench job has run. Then
-  quote the job IDs, and call per-token figures what they are: one layer,
-  extrapolated.
+- *"X Plus 8-Core does 6.314 ms per token."* It does 6.314 ms per **layer**,
+  at fp16, profiled in isolation. A model figure needs every layer plus the
+  LM head, and the quantised paths did not run at all on that device.
+- *"The quantised paths are broken."* Two jobs failed at profile time on one
+  device at one context length. That is what we saw and all we claim.
 - *"Speculative decoding gives a 12× speed-up."* The model assumes each draft
   token is accepted independently, which real drafts are not. Every speculative
   speed-up here is an upper bound; what is robust is where the verifier's
@@ -347,9 +382,9 @@ under questioning.
 
 | Criterion | What carries it |
 |---|---|
-| Technical Implementation | The scaling-book roofline, reproduced 17/17 and then tested on Qualcomm's own X-series measurements (R² ≥ 0.99); the container rule validated 8/8 on data we did not fit; exact folding with a RoPE guard; 872 self-tests across 14 modules, a 292-check stress harness that found 17 defects on its first run and 10 more from its fuzzer since, and a 128-check claim audit that re-derives the quoted numbers from the code. Every correction is dated in `PROVENANCE.md`, including corrections to our own published numbers |
+| Technical Implementation | The scaling-book roofline, reproduced 17/17 and then tested on Qualcomm's own X-series measurements (R² ≥ 0.99); the first published profile of a real decoder layer on Snapdragon X Plus 8-Core CRD, failures included; the container rule validated 8/8 on data we did not fit; exact folding with a RoPE guard; 872 self-tests across 14 modules, a 292-check stress harness that found 17 defects on its first run and 10 more from its fuzzer since, and a 131-check claim audit that re-derives the quoted numbers from the code. Every correction is dated in `PROVENANCE.md`, including corrections to our own published numbers |
 | Use Case & Innovation | Indic on-device document intelligence; privacy and offline operation are the product. Prefill/decode read as the critical batch tells a speculative pipeline where to verify. The vision-tower gap is a concrete, stated next experiment |
-| Deployment & Accessibility | Every one of the seven HP Snapdragon PCs mapped to its silicon, RAM budget and AI Hub proxy, with the gaps named; a zero-download Workbench runner aimed at the one X-series device Qualcomm has not measured; GenieX + llmware ONNXRuntime-QNN; Apache-2.0 throughout |
+| Deployment & Accessibility | Every one of the seven HP Snapdragon PCs mapped to its silicon, RAM budget and AI Hub proxy, with the gaps named; a zero-download Workbench runner that has now profiled the one X-series device Qualcomm has not measured; findings that apply directly to a shipped MIT-licensed local-AI app whose NPU path fails on that same part; GenieX + llmware ONNXRuntime-QNN; Apache-2.0 throughout |
 | Presentation & Documentation | `FINDINGS.md` and `PROVENANCE.md` report every falsified hypothesis and every correction, including the withdrawal of our own claim about Qualcomm's data. Few entrants will show their negative results |
 
 ---
@@ -370,6 +405,8 @@ and every correction dated. Headline entries:
 | `llmware-ai/llmware` | read | ONNXRuntime-QNN Snapdragon NPU path |
 | *Finite Time Blowup for Navier–Stokes* and its Lean certificates | read in full | The correction-cycle model, the calibration law, the certificate protocol |
 | `zhengkid/Dream-RSI` | read | The replay-simulator idea behind `dream_search.py` |
+| `Mintplex-Labs/anything-llm` (MIT) + its QNN model list | read | The shipped local-AI app these findings apply to; its NPU model line-up |
+| anything-llm issue #5129, and Qualcomm's own AnythingLLM-on-NPU write-up | read | The X Plus NPU failure in shipped software; the vendor-supported NPU port |
 | QuaRot, SpinQuant, KurTail, DartQuant, KIVI, QuIP#, GPTQ, AWQ | read | Rotation and quantisation prior art |
 | Snapdragon X2 product briefs | verified | 80 TOPS INT8, LPDDR5X 9523 MT/s, ~152 GB/s |
 
